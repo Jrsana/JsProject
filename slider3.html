@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+
+<body>
+    <style>
+    .slide,
+    .slider-list img {
+        width: 300px;
+        height: 300px;
+       float: left;
+        max-width: 300px;
+        max-height: 300px;
+        margin:0;
+    }
+    .slider-list{
+        position: relative;
+
+        -webkit-transition: 1s ease-in;
+        -moz-transition: 1s ease-in;
+        -o-transition: 1s ease-in;
+        transition: 1s ease-in;
+    }
+    .outer {
+        overflow: hidden;
+        width:300px;
+        height:300px;
+        margin:0 auto;
+    }
+    .links{
+        width:100%;
+        display: inline-block;
+        text-align: center;
+    }
+    .links a{
+        display: inline-block;
+
+    }
+        .link{
+            border-radius: 100%;
+            background: blue;
+            width:5px;
+            height:5px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+        .link.active{
+            background: yellow;
+        }
+    </style>
+    <div class="slide">
+        <div class="outer">
+            <div class="slider-list">
+                <img src="./images/1.jpg" alt="">
+                <img src="./images/2.jpg" alt="">
+                <img src="./images/3.jpg" alt="">
+                <img src="./images/4.jpg" alt="">
+                <img src="./images/5.jpg" alt="">
+                <img src="./images/6.jpg" alt="">
+                <img src="./images/7.jpg" alt="">
+            </div>
+
+        </div>
+        <div class="links"></div>
+    </div>
+    <script>
+
+        function Slider(){
+            this.init();
+        }
+
+        Slider.prototype.sliderList = document.querySelector('div.slider-list');
+        Slider.prototype.sliderOuter = document.querySelector('.outer');
+        Slider.prototype.links = document.querySelector('div.links');
+        Slider.prototype.count = document.querySelector('div.slider-list').children.length;
+        Slider.prototype.allImages = document.querySelector('div.slider-list').querySelectorAll('img');
+
+        Slider.prototype.width = parseInt(window.getComputedStyle(document.querySelector('div.slider-list').firstElementChild).getPropertyValue('width'));
+        Slider.prototype.activeClass = 'active';
+        Slider.prototype.seconds = 2;
+
+
+
+        Slider.prototype.showPoints = function(){
+
+            for(var i=0; i<this.count; i++){
+                var link = document.createElement('a');
+                link.className="link";
+                link.setAttribute("data-controls",i+1);
+                this.links.appendChild(link);
+            }
+
+           for(var j=0; j < this.allImages.length; j++){
+                this.allImages[j].setAttribute("data-slide",j+1);
+            }
+        }
+
+        Slider.prototype.firstElementInit = function() {
+
+            this.links.firstElementChild.classList.add(this.activeClass);
+            var sliderWidth = this.width * this.count;
+            this.sliderList.style.cssText = "width:"+sliderWidth+"px";
+
+        }
+
+        Slider.prototype.addListener = function() {
+            this.links.addEventListener('click', this.handler.bind(this));
+        }
+        Slider.prototype.removeClass = function(items){
+
+
+            for(var i=0; i<items.length;i++){
+                items[i].classList.remove(this.activeClass);
+            }
+        }
+        Slider.prototype.handler = function(event, elem) {
+            var target = event && event.target ? event.target : elem,
+                    src = target.src ? target.src : "";
+
+            var allLinks = this.links.querySelectorAll('a');
+
+            for (var i=0; i<allLinks.length;i++){
+                if(target ==  allLinks[i]) {
+                    curDataControl = (target.getAttribute("data-controls")) - 1;
+
+                    this.removeClass(allLinks);
+                    allLinks[curDataControl].classList.add(this.activeClass);
+
+                    this.sliderList.style.cssText += "transform: translateX(-" + (curDataControl * this.width) + "px)";
+                    this.sliderList.style.cssText += "transition: " + this.seconds/curDataControl + "s ease-in)";
+
+                }
+            }
+
+
+
+
+        }
+        Slider.prototype.init = function(){
+
+            this.showPoints();
+            this.firstElementInit();
+            this.addListener();
+        }
+
+        document.addEventListener("DOMContentLoaded", function(event) {
+            var newSlider = new Slider();
+        });
+
+
+    </script>
+</body>
+
+</html>
